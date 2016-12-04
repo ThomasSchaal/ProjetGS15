@@ -6,7 +6,7 @@ import java.util.Scanner;
  * @author daussy
  *
  */
-public class Blahblah {
+public class Main {
 
 	public static void main(String[] args) {
 		System.out.println("->1<- Chiffrement symétrique VCES");
