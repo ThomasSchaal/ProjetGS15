@@ -95,15 +95,7 @@ public class AESModel {
 	static FileWriter out;
 	static int keyFileIndex = 1; //Index where the keyFile argument should be. Used to determines the index of other arguments.
 
-	/**
-	 * Default constructor
-	 */
-	public AESModel() {
-		//Nothing to initialize here.
-	}
-
-	public static void main(String args[]) throws IOException 
-	{
+	public AESModel(String args[]) throws IOException{
 		/*
 		 * args[0] should be either "e" or "d"
 		 * args[1] and args[2] should correspond to the following:
@@ -146,7 +138,7 @@ public class AESModel {
 			{
 				throw new Exception("Error: Attemping to use a " + key.length() * 4 + "-bit key with AES-"+keysizecheck);
 			}           
-			input = new BufferedReader(new FileReader(args[keyFileIndex+1])); // outofbound
+			input = new BufferedReader(new FileReader(args[keyFileIndex+1])); 
 			if(mode == Mode.CBC)
 			{
 				iv = keyreader.readLine();
@@ -283,6 +275,13 @@ public class AESModel {
 			System.err.println("Usage for Encryption: java AES e keyFile inputFile");
 			System.err.println("Usage for Decryption: java AES d keyFile encryptedinputFile");
 		} 
+	}
+	
+	/**
+	 * Default constructor
+	 */
+	public AESModel() {
+		//Nothing to initialize here.
 	}
 
 	/**
