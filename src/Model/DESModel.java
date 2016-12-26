@@ -1,6 +1,6 @@
 package Model;
 
-public class DES {
+public class DESModel {
 
 	// Initial Permutation table
 	private static final int[] IP = { 

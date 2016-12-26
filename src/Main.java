@@ -1,5 +1,7 @@
 import java.util.Scanner;
 
+import Model.DESModel;
+
 /**
  * Class principale qui va permettre à l'utilisateur 
  * de faire un choix parmi les différents algorithme de chiffrement
@@ -31,6 +33,23 @@ public class Main {
 			switch (choice){
 			case 1:
 				// Chiffrement symétrique VCES
+				//Test DES
+				String message = "Message que je veux crypter on va faire en sorte qu'il dépasse les \n beaucoup de caractères pour voir ce que ça fait";
+				System.out.println("Clear message : " + message);
+				byte[] data = message.getBytes();
+				String cle = "1234567890123456789012345678901834567890123456789012345678901234";
+				byte[] key = cle.getBytes();
+				
+				byte[] encrypted = DESModel.encrypt(data, key);
+				String encryptedString = new String(encrypted);
+				System.out.println("Encrypted message : " + encryptedString);
+				
+				
+				byte[] decrypted = DESModel.decrypt(encrypted, key);		
+				String test = new String(decrypted);
+				System.out.println("Decrypted message : " + test);
+				//Fin test DES
+				
 				break;
 			case 2:
 				// Chiffrement RSA avec module multiple
