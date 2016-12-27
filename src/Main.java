@@ -1,5 +1,7 @@
+import java.io.IOException;
 import java.util.Scanner;
 
+import Model.AESModel;
 import Model.DESModel;
 
 /**
@@ -11,8 +13,8 @@ import Model.DESModel;
 public class Main {
 
 	public static void main(String[] args) {
-		System.out.println("->1<- Chiffrement symétrique VCES");
-		System.out.println("->2<- Chiffrement RSA avec module multiple");
+		System.out.println("->1<- Chiffrement symétrique VCES (Test DES)");
+		System.out.println("->2<- Chiffrement RSA avec module multiple (Test AES)");
 		System.out.println("->3<- Signature RSA avec module multiple");
 		System.out.println("->4<- Déchiffrement RSA");
 		System.out.println("->5<- Vérifier une signature RSA");
@@ -33,6 +35,7 @@ public class Main {
 			switch (choice){
 			case 1:
 				// Chiffrement symétrique VCES
+				
 				//Test DES
 				String message = "Message que je veux crypter on va faire en sorte qu'il dépasse les \n beaucoup de caractères pour voir ce que ça fait";
 				System.out.println("Clear message : " + message);
@@ -53,6 +56,25 @@ public class Main {
 				break;
 			case 2:
 				// Chiffrement RSA avec module multiple
+				
+				//Test DES
+				try {
+					String[] aesEncrypt = new String[3];
+					aesEncrypt[0] = "e";
+					aesEncrypt[1] = "input.txt";
+					aesEncrypt[2] = "inputFile.txt";
+					AESModel aesE = new AESModel(aesEncrypt);
+					
+					String[] aesDecrypt = new String[3];
+					aesDecrypt[0] = "d";
+					aesDecrypt[1] = "input.txt";
+					aesDecrypt[2] = "inputFile.txt.enc";
+					AESModel aesD = new AESModel(aesDecrypt);							
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				//Fin test DES
 				break;
 			case 3:
 				// Signature RSA avec module multiple
