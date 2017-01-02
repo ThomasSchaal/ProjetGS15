@@ -1,7 +1,14 @@
 package Model;
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
+import java.util.Arrays;
+import java.util.List;
 
 //RSA avec padding PKCS
 public class RSAModel {
@@ -39,6 +46,9 @@ public class RSAModel {
 	    
 	    //Solve following equation to find decryption key d such that e*d=1 mod ø(N) and 0<d<N
 	    d = e.modInverse(phiN);	
+	    
+	    //Save results in a file
+	    writeKeysInFile();
 	}
 	
 	
@@ -51,7 +61,17 @@ public class RSAModel {
 		return cypherMessage.modPow(d, n);
 	}
 	
-	public void writeKeysInFile() {}
+	//Publish public encryption key: PU={e, N}
+	public void writeKeysInFile() {
+		List<String> lines = Arrays.asList(e.toString(), n.toString());
+		Path file = Paths.get("publicKey.txt");
+		try {
+			Files.write(file, lines, Charset.forName("UTF-8"));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
 	
 	public void generateSignature(String privateKey) {}
 	
