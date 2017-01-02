@@ -1,8 +1,10 @@
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Scanner;
 
 import Model.AESModel;
 import Model.DESModel;
+import Model.RSAModel;
 
 /**
  * Class principale qui va permettre à l'utilisateur 
@@ -53,11 +55,8 @@ public class Main {
 				System.out.println("Decrypted message : " + test);
 				//Fin test DES
 				
-				break;
-			case 2:
-				// Chiffrement RSA avec module multiple
 				
-				//Test DES
+				//Test AES
 				try {
 					String[] aesEncrypt = new String[3];
 					aesEncrypt[0] = "e";
@@ -74,10 +73,30 @@ public class Main {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				//Fin test DES
+				//Fin test AES
+				
+				break;
+			case 2:
+				// Chiffrement RSA avec module multiple
+				
+				//Test RSA
+				RSAModel rsa = new RSAModel();
+
+			    String text1 = "Thomas et Alexandre galerent en crypto";
+			    System.out.println("Plaintext: " + text1);
+			    BigInteger plaintext = new BigInteger(text1.getBytes());
+
+			    BigInteger ciphertext = rsa.encrypt(plaintext);
+			    System.out.println("Ciphertext: " + ciphertext);
+			    plaintext = rsa.decrypt(ciphertext);
+
+			    String text2 = new String(plaintext.toByteArray());
+			    System.out.println("Plaintext: " + text2);
+				//Fin test RSA				
 				break;
 			case 3:
 				// Signature RSA avec module multiple
+				
 				break;
 			case 4:
 				// Déchiffrement RSA
