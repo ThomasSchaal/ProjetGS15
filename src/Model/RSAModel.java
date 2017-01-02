@@ -83,6 +83,27 @@ public class RSAModel {
 		return cypherMessage.modPow(d, n);
 	}
 	
+	public BigInteger decryptMultiPrime(BigInteger cypherMessage){
+		    
+		BigInteger dp = d.mod(p.subtract(BigInteger.ONE));
+		BigInteger dq = d.mod(q.subtract(BigInteger.ONE));
+		
+		BigInteger invq = q.modInverse(p);
+		
+		BigInteger mp = cypherMessage.modPow(dp, p);
+		BigInteger mq = cypherMessage.modPow(dq, q);
+		
+		//k = (mp − mq)q
+		BigInteger k = (mp.subtract(mq)).multiply(q);
+
+		//return m = m'q^(-1)+mq
+		BigInteger m = k.multiply(invq).add(mq);
+		
+		return m;
+	}
+	
+	
+	
 	//Publish public encryption key: PU={e, n}
 	public void writePublicKeysInFile() {
 		List<String> lines = Arrays.asList(e.toString(), n.toString());

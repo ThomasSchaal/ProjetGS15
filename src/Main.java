@@ -15,8 +15,8 @@ import Model.RSAModel;
 public class Main {
 
 	public static void main(String[] args) {
-		System.out.println("->1<- Chiffrement symétrique VCES (Test DES)");
-		System.out.println("->2<- Chiffrement RSA avec module multiple (Test AES)");
+		System.out.println("->1<- Chiffrement symétrique VCES");
+		System.out.println("->2<- Chiffrement RSA avec module multiple");
 		System.out.println("->3<- Signature RSA avec module multiple");
 		System.out.println("->4<- Déchiffrement RSA");
 		System.out.println("->5<- Vérifier une signature RSA");
@@ -77,8 +77,7 @@ public class Main {
 				
 				break;
 			case 2:
-				// Chiffrement RSA avec module multiple
-				
+				// Chiffrement RSA avec module multiple				
 				//Test RSA
 				RSAModel rsa = new RSAModel();
 
@@ -91,7 +90,11 @@ public class Main {
 			    plaintext = rsa.decrypt(ciphertext);
 
 			    String text2 = new String(plaintext.toByteArray());
-			    System.out.println("Plaintext: " + text2);
+			    System.out.println("Plaintext (normal): " + text2);
+			    
+			    BigInteger txt3 = rsa.decryptMultiPrime(ciphertext);
+			    String text3 = new String(txt3.toByteArray());
+			    System.out.println("Plaintext (multiprime):" + text3);
 				//Fin test RSA				
 				break;
 			case 3:
