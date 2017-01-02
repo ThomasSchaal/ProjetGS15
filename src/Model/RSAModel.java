@@ -26,6 +26,27 @@ public class RSAModel {
 		this.e = e;
 	}
 	
+	//key = true if we have public key, false if we have private
+	public RSAModel(String path, boolean key){
+		try {
+			List<String> lines = Files.readAllLines(Paths.get(path), Charset.forName("UTF-8"));
+			if (key){
+				this.e = new BigInteger(lines.get(0));
+				this.n = new BigInteger(lines.get(1));
+			} else {
+				this.d = new BigInteger(lines.get(0));
+				this.p = new BigInteger(lines.get(1));
+				this.q = new BigInteger(lines.get(2));
+				this.n = p.multiply(q);
+			}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
 	// Generate the needed keys
 	public void generateKeys(){
 		SecureRandom random = new SecureRandom();
@@ -48,7 +69,8 @@ public class RSAModel {
 	    d = e.modInverse(phiN);	
 	    
 	    //Save results in a file
-	    writeKeysInFile();
+	    writePublicKeysInFile();
+	    writePrivateKeysInFile();
 	}
 	
 	
@@ -61,10 +83,22 @@ public class RSAModel {
 		return cypherMessage.modPow(d, n);
 	}
 	
-	//Publish public encryption key: PU={e, N}
-	public void writeKeysInFile() {
+	//Publish public encryption key: PU={e, n}
+	public void writePublicKeysInFile() {
 		List<String> lines = Arrays.asList(e.toString(), n.toString());
 		Path file = Paths.get("publicKey.txt");
+		try {
+			Files.write(file, lines, Charset.forName("UTF-8"));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+	
+	//Keep secret private decryption key: PR={d, p, q}
+	public void writePrivateKeysInFile(){
+		List<String> lines = Arrays.asList(d.toString(), p.toString(), q.toString());
+		Path file = Paths.get("privateKeys.txt");
 		try {
 			Files.write(file, lines, Charset.forName("UTF-8"));
 		} catch (IOException e1) {
