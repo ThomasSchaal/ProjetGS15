@@ -3,6 +3,8 @@ import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
+import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
+
 import Model.AESModel;
 import Model.DESModel;
 import Model.RSAModel;
@@ -40,20 +42,12 @@ public class Main {
 				// Chiffrement symétrique VCES
 				
 				//Test DES
-				String message = "Message que je veux crypter on va faire en sorte qu'il dépasse les \n beaucoup de caractères pour voir ce que ça fait";
-				System.out.println("Clear message : " + message);
-				byte[] data = message.getBytes();
 				String cle = "1234567890123456789012345678901834567890123456789012345678901234";
 				byte[] key = cle.getBytes();
-				
-				byte[] encrypted = DESModel.encrypt(data, key);
-				String encryptedString = new String(encrypted);
-				System.out.println("Encrypted message : " + encryptedString);
-				
-				
-				byte[] decrypted = DESModel.decrypt(encrypted, key);		
-				String test = new String(decrypted);
-				System.out.println("Decrypted message : " + test);
+				String pathPlainmessageDES = "DESplainmessage.txt";
+				String pathCiphermessageDES = "DEScyphermessage.enc.txt";
+				DESModel.encrypt(pathPlainmessageDES, key); //encrypted message will be store in a file
+				DESModel.decrypt(pathCiphermessageDES, key); //uncrypted message will be store in a file
 				//Fin test DES
 				
 				

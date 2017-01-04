@@ -1,5 +1,15 @@
 package Model;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
+
+import javax.swing.event.ListSelectionEvent;
+
+import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
+
 public class DESModel {
 
 	// Initial Permutation table
@@ -320,7 +330,15 @@ public class DESModel {
 	}
 
 	
-	public static byte[] encrypt(byte[] data, byte[] key) {
+	public static void encrypt(String path, byte[] key) {
+		//fetch the message from a specified file
+		String message = "";
+		try {
+			message = Files.readAllLines(Paths.get(path), Charset.forName("UTF-8")).get(0); 
+		} catch (IOException e) {}
+		
+		byte[] data = message.getBytes();
+		
 		/*
 		 * first we need to be sure to have blocks which
 		 * are multiples of 8
@@ -360,12 +378,28 @@ public class DESModel {
 		if(block.length == 8){
 			block = encrypt64Bloc(block,K, false);
 			System.arraycopy(block, 0, tmp, i - 8, block.length);
-		}
-		return tmp;
+		}		
+		
+		
+		//String encryptedString = new String(tmp);
+		String b64 = Base64.encode(tmp);
+		try {
+			Files.write(Paths.get("DEScyphermessage.enc.txt"), Arrays.asList(b64), Charset.forName("UTF-8"));
+		} catch (IOException e) {}
+		
+		//return tmp;
 	}
 
 
-	public static byte[] decrypt(byte[] data, byte[] key) {
+	public static void decrypt(String path, byte[] key) {
+		//fetch the message from a specified file
+		String message = "";
+		try {
+			message = Files.readAllLines(Paths.get(path), Charset.forName("UTF-8")).get(0); 
+		} catch (IOException e) {}
+
+		byte[] data = Base64.decode(message);
+
 		int i;
 		byte[] tmp = new byte[data.length];
 		byte[] bloc = new byte[8];
@@ -385,7 +419,13 @@ public class DESModel {
 
 
 		tmp = deletePadding(tmp);
+		
+		String dec = new String(tmp);
+		
+		try {
+			Files.write(Paths.get("DESdecryptedmessage.dec.txt"), Arrays.asList(dec), Charset.forName("UTF-8"));
+		} catch (IOException e) {}
 
-		return tmp;
+		//return tmp;
 	}
 }
