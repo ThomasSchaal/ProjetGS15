@@ -53,8 +53,8 @@ public class RSAModel {
 	public void generateKeys(){
 		SecureRandom random = new SecureRandom();
 		
-		p = new BigInteger(1024/2, 100, random);
-		q = new BigInteger(1024/2, 100, random);
+		p = new BigInteger(2048, 100, random);
+		q = new BigInteger(2048, 100, random);
 		
 		//n = p*q
 		n = p.multiply(q);
