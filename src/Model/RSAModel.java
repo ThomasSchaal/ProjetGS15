@@ -3,6 +3,7 @@ package Model;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -186,8 +187,8 @@ public class RSAModel {
 	
 	
 	public BigInteger hashPlaintext(String plainText) throws NoSuchAlgorithmException {
-		MessageDigest md = MessageDigest.getInstance("MD5");
-		md.update(plainText.getBytes());
+		MessageDigest md = MessageDigest.getInstance("SHA-256");
+		md.update(plainText.getBytes(StandardCharsets.UTF_8));
 		byte[] digest = md.digest();
 		
 		StringBuffer hashPlainText = new StringBuffer();
