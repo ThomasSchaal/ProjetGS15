@@ -6,6 +6,8 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
@@ -128,81 +130,46 @@ public class RSAModel {
 		}
 	}
 	
-	public void generateSignature(String privateKey) {}
+	public BigInteger generateSignature(String plainText) throws NoSuchAlgorithmException {
+		//using private key
+		/*
+		 * hash(plaintext)^d mod n = m'
+		 */		
+		BigInteger hashPlainText = hashPlaintext(plainText);
+		System.out.println("hashPlainText before : " + hashPlainText);
+		BigInteger signature = hashPlainText.modPow(d,n);			
+		return signature; //return hash(plaintext)^d [n]		
+	}
 	
-	public void verifySignature(String publicKey) {}
 	
-	/*
-	public String bytesToString(byte[] b) {
-	    byte[] b2 = new byte[b.length + 1];
-	    b2[0] = 1;
-	    System.arraycopy(b, 0, b2, 1, b.length);
-	    return new BigInteger(b2).toString(36);
+	public Boolean verifySignature(String plainText, BigInteger signature) throws NoSuchAlgorithmException {
+		/*
+		 * H(m) == m'^e mod n 
+		 */
+		//We need hash(plaintext) to compare
+		BigInteger hashPlainText = hashPlaintext(plainText);
+		
+		//We need to compute signature^e[n]		
+		BigInteger verify = signature.modPow(e,n);
+		
+		//If hash(plaintext) = signature^e[n], it means the signature is verified
+		return verify.compareTo(hashPlainText) == 0;
 	}
-
-	public byte[] stringToBytes(String s) {
-	    byte[] b2 = new BigInteger(s, 36).toByteArray();
-	    return Arrays.copyOfRange(b2, 1, b2.length);
-	}
-	*/
-
-	public BigInteger getN() {
-		return n;
-	}
-
-
-	public void setN(BigInteger n) {
-		this.n = n;
-	}
-
-
-	public BigInteger getD() {
-		return d;
-	}
-
-
-	public void setD(BigInteger d) {
-		this.d = d;
-	}
-
-
-	public BigInteger getE() {
-		return e;
-	}
-
-
-	public void setE(BigInteger e) {
-		this.e = e;
-	}
-
-
-	public BigInteger getPhiN() {
-		return phiN;
-	}
-
-
-	public void setPhiN(BigInteger phiN) {
-		this.phiN = phiN;
-	}
-
-
-	public BigInteger getP() {
-		return p;
-	}
-
-
-	public void setP(BigInteger p) {
-		this.p = p;
-	}
-
-
-	public BigInteger getQ() {
-		return q;
-	}
-
-
-	public void setQ(BigInteger q) {
-		this.q = q;
+	
+	
+	public BigInteger hashPlaintext(String plainText) throws NoSuchAlgorithmException {
+		MessageDigest md = MessageDigest.getInstance("MD5");
+		md.update(plainText.getBytes());
+		byte[] digest = md.digest();
+		
+		StringBuffer hashPlainText = new StringBuffer();
+		for (byte b : digest) { //print byte[] in hexa
+			hashPlainText.append(String.format("%02x", b & 0xff));
+		}
+		
+		BigInteger hash = new BigInteger(hashPlainText.toString().getBytes());
+		
+		return hash;
 	}
 	
 }

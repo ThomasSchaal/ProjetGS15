@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
 import Model.AESModel;
@@ -99,7 +100,19 @@ public class Main {
 				break;
 			case 3:
 				// Signature RSA avec module multiple
-				
+				String msg = "Thomas et Alexandre galerent en crypto";
+			    System.out.println("Plaintext: " + msg);
+			    BigInteger signature;
+				try {
+					RSAModel rsaa = new RSAModel();
+					signature = rsaa.generateSignature(msg);
+				    System.out.println("Signature: " + signature);				    
+				    Boolean verif = rsaa.verifySignature(msg, signature);
+				    System.out.println("Verif: " + verif);
+				} catch (NoSuchAlgorithmException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}				
 				break;
 			case 4:
 				// Déchiffrement RSA
