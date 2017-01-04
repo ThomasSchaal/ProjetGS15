@@ -99,7 +99,7 @@ public class Main {
 				//Fin test RSA				
 				break;
 			case 3:
-				// Signature RSA avec module multiple
+				// Signature RSA 
 				String msg = "Thomas et Alexandre galerent en crypto";
 			    System.out.println("Plaintext: " + msg);
 			    BigInteger signature;
@@ -109,6 +109,9 @@ public class Main {
 				    System.out.println("Signature: " + signature);				    
 				    Boolean verif = rsaa.verifySignature(msg, signature);
 				    System.out.println("Verif: " + verif);
+				    //Avec modulo multiple
+				    Boolean verifMultiPrime = rsaa.verifySignatureMultiPrime(msg, signature);
+				    System.out.println("Multi prime verif : " + verifMultiPrime);
 				} catch (NoSuchAlgorithmException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -157,6 +157,34 @@ public class RSAModel {
 	}
 	
 	
+	public Boolean verifySignatureMultiPrime(String plainText, BigInteger signature) throws NoSuchAlgorithmException {
+		/*
+		 * H(m) == m'^e mod n 
+		 */
+		//We need hash(plaintext) to compare
+		BigInteger hashPlainText = hashPlaintext(plainText);
+		
+		//We need to compute signature^e[n]	 but in multiprime way	
+		BigInteger ep = e.mod(p.subtract(BigInteger.ONE));
+		BigInteger eq = e.mod(q.subtract(BigInteger.ONE));
+		
+		BigInteger invq = q.modInverse(p);
+		
+		BigInteger signaturep = signature.modPow(ep, p);
+		BigInteger signatureq = signature.modPow(eq, q);
+		
+		//k = (signaturep − signatureq)q
+		BigInteger k = (signaturep.subtract(signatureq)).multiply(q);
+
+		//return m = m'q^(-1)+mq
+		BigInteger signatureHash = k.multiply(invq).add(signatureq);		
+		
+		
+		//If hash(plaintext) = signature^e[n], it means the signature is verified
+		return signatureHash.compareTo(hashPlainText) == 0;
+	}
+	
+	
 	public BigInteger hashPlaintext(String plainText) throws NoSuchAlgorithmException {
 		MessageDigest md = MessageDigest.getInstance("MD5");
 		md.update(plainText.getBytes());
