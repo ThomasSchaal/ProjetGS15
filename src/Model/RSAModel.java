@@ -236,20 +236,17 @@ public class RSAModel {
 
 		StringBuilder sb = new StringBuilder();
 		for(int i = 0; i < m.length(); i++)
-		{
 			sb.append((char)(m.charAt(i) ^ G.charAt(i % G.length()))); // m XOR G
-		}
+		
 		
 		X = sb.toString(); // X = m XOR G
 		H = new String(hashPlaintext(X).toByteArray()); // H = sha-256(X)
 		
 		sb = new StringBuilder();
 		for(int i = 0; i < r.length(); i++)
-		{
 			sb.append((char)(r.charAt(i) ^ H.charAt(i % H.length()))); //r XOR H
-		}
 		
-		Y = sb.toString(); // Y = r XOR G and we already had X = m XOR G
+		Y = sb.toString(); // Y = r XOR H and we already had X = m XOR G
 		
 		BigInteger msg = new BigInteger(Y.getBytes());
 
@@ -259,20 +256,18 @@ public class RSAModel {
 
 	public BigInteger depadding(BigInteger cyperMessage) throws FileNotFoundException, UnsupportedEncodingException
 	{
-		// Depdadding
+		// Depadding
 		StringBuilder sb = new StringBuilder();
 		for(int i = 0; i < Y.length(); i++)
-		{
-			sb.append((char)(Y.charAt(i) ^ H.charAt(i % H.length())));
-		}
-		r = sb.toString();
+			sb.append((char)(Y.charAt(i) ^ H.charAt(i % H.length()))); 
+		
+		r = sb.toString(); // we retrieve r = Y XOR H
 		
 		sb = new StringBuilder();
 		for(int i = 0; i < X.length(); i++)	
-		{
 			sb.append((char)(X.charAt(i) ^ G.charAt(i % G.length())));
-		}
-		String m = sb.toString();
+		
+		String m = sb.toString(); // w retrieve message = X XOR G 
 		
 		BigInteger msg = new BigInteger(m.getBytes());
 
