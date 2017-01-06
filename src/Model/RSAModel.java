@@ -1,6 +1,9 @@
 package Model;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -17,6 +20,8 @@ import java.util.List;
 public class RSAModel {
 	
 	private BigInteger n, d, e, phiN, p, q;
+	private String H, G, r, X, Z, Y;
+
 
 	// Create new keys
 	public RSAModel() {
@@ -79,11 +84,24 @@ public class RSAModel {
 	
 	
 	public BigInteger encrypt(BigInteger message) {
+		try {
+			message = padding(message);
+		} catch (NoSuchAlgorithmException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		return message.modPow(e, n); 
 	}
 	
 	public BigInteger decrypt(BigInteger cypherMessage) {
-		return cypherMessage.modPow(d, n);
+		try {
+			cypherMessage = depadding(cypherMessage.modPow(d, n));
+		} catch (FileNotFoundException | UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return cypherMessage;
 	}
 	
 	public BigInteger decryptMultiPrime(BigInteger cypherMessage){
@@ -101,6 +119,13 @@ public class RSAModel {
 
 		//return m = m'q^(-1)+mq
 		BigInteger m = k.multiply(invq).add(mq);
+		
+		try {
+			m = depadding(m);
+		} catch (FileNotFoundException | UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return m;
 	}
@@ -201,4 +226,58 @@ public class RSAModel {
 		return hash;
 	}
 	
+	
+	public BigInteger padding(BigInteger message) throws NoSuchAlgorithmException
+	{
+		String m = new String(message.toByteArray());
+		
+		r= "0000000000000000"; // We fix r.length = 16
+		G = new String(hashPlaintext(m).toByteArray()); //sha-256(m)
+
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < m.length(); i++)
+		{
+			sb.append((char)(m.charAt(i) ^ G.charAt(i % G.length()))); // m XOR G
+		}
+		
+		X = sb.toString(); // X = m XOR G
+		H = new String(hashPlaintext(X).toByteArray()); // H = sha-256(X)
+		
+		sb = new StringBuilder();
+		for(int i = 0; i < r.length(); i++)
+		{
+			sb.append((char)(r.charAt(i) ^ H.charAt(i % H.length()))); //r XOR H
+		}
+		
+		Y = sb.toString(); // Y = r XOR G and we already had X = m XOR G
+		
+		BigInteger msg = new BigInteger(Y.getBytes());
+
+		return msg;
+
+	}
+
+	public BigInteger depadding(BigInteger cyperMessage) throws FileNotFoundException, UnsupportedEncodingException
+	{
+		// Depdadding
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < Y.length(); i++)
+		{
+			sb.append((char)(Y.charAt(i) ^ H.charAt(i % H.length())));
+		}
+		r = sb.toString();
+		
+		sb = new StringBuilder();
+		for(int i = 0; i < X.length(); i++)	
+		{
+			sb.append((char)(X.charAt(i) ^ G.charAt(i % G.length())));
+		}
+		String m = sb.toString();
+		
+		BigInteger msg = new BigInteger(m.getBytes());
+
+		return msg;
+
+	}
+
 }
