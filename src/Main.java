@@ -37,12 +37,13 @@ public class Main {
 			//Renvoie vers le choix
 			switch (choice){
 			case 1:
-				
-				String cle = "1234567890123456789012345678901834567890123456789012345678901234";
+				//DES encryption
+				String cle = "1234567890123456789012345678901834567890123456789012345678901234"; // for DES 
 				byte[] key = cle.getBytes();
 				String pathPlainmessageDES = "DESplainmessage.txt";
 				DESModel.encrypt(pathPlainmessageDES, key); 
 				
+				//AES encryption
 				try{
 					String[] aesEncrypt = new String[3];
 					aesEncrypt[0] = "e";
@@ -54,6 +55,7 @@ public class Main {
 						e.printStackTrace();
 					}
 				
+				//AES decryption
 				try {
 					String[] aesDecrypt = new String[3];
 					aesDecrypt[0] = "d";
@@ -65,10 +67,9 @@ public class Main {
 					e.printStackTrace();
 				}
 				
+				//DES decryption 
 				String pathCiphermessageDES = "DEScyphermessage.enc.txt.enc.txt.dec";
 				DESModel.decrypt(pathCiphermessageDES, key); //encrypted message will be store in a file
-				
-
 				break;
 			case 2:
 				// Chiffrement RSA avec module multiple				

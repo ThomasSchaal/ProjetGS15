@@ -99,15 +99,6 @@ public class AESModel {
 	static int keyFileIndex = 1; //Index where the keyFile argument should be. Used to determines the index of other arguments.
 
 	public AESModel(String args[]) throws IOException{
-		/*
-		 * args[0] should be either "e" or "d"
-		 * args[1] and args[2] should correspond to the following:
-		 *
-		 * -length => "128" or "256"
-		 * not -length: args[1] should be the keyFile, and args[2] should be the inputFile
-		 *
-		 * args[3] and args[4] should exist only if -length was specified:
-		 */
 		try 
 		{
 			int keysizecheck = 128;
@@ -119,7 +110,7 @@ public class AESModel {
 			}
 			keyreader = new BufferedReader(new FileReader(args[keyFileIndex]));
 			key = keyreader.readLine(); // read the key from the txt file 
-			if(key.length() *4 != keysizecheck) //Check to see if user's intended key size matches the size of key in file.
+			if(key.length() *4 != keysizecheck) 
 			{
 				throw new Exception("Error: Attemping to use a " + key.length() * 4 + "-bit key with AES-"+keysizecheck);
 			}           
@@ -177,7 +168,7 @@ public class AESModel {
 			input.close();
 			out.close();
 		} 
-		else if (args[0].equalsIgnoreCase("d")) //Decryption Mode 
+		else if (args[0].equalsIgnoreCase("d")) //decryption Mode 
 		{
 			out = new FileWriter(ftw + ".dec");
 			int numRounds = 10 + (((key.length() * 4 - 128) / 32));
@@ -263,7 +254,7 @@ public class AESModel {
 	}
 
 	/**
-	 * Manage the leftrotating
+	 * Manage the leftrotation
 	 * @param tab : state
 	 */
 	public void shiftRows(int[][] tab){
@@ -296,7 +287,7 @@ public class AESModel {
 
 	/**
 	 * ShiftRows inverse
-	 * Manage rightrotate on each line 
+	 * Manage rightrotation on each line 
 	 * @param tab : state
 	 */
 	public void invShiftRows(int[][] tab){
