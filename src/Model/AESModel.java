@@ -1,12 +1,14 @@
 package Model;
 
-import java.io.*; 
+import java.io.*;
+import java.math.BigInteger;
+import java.nio.charset.Charset;
+
+import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin; 
 
 public class AESModel {
 
 	public static final String newline = System.getProperty("line.separator"); 
-	// A VIRER 
-	public static enum Mode { ECB,CBC };
 
 	/**
 	 * SubBytes table
@@ -88,10 +90,9 @@ public class AESModel {
 
 	static String key = "";
 	static String iv = "";
-	static String ftw = "";
-	static BufferedReader keyreader;
-	static BufferedReader input;
-	static Mode mode;
+	static String ftw = ""; 
+	static BufferedReader keyreader; 
+	static BufferedReader input; 
 	static FileWriter out;
 	static int keyFileIndex = 1; //Index where the keyFile argument should be. Used to determines the index of other arguments.
 
@@ -101,56 +102,26 @@ public class AESModel {
 		 * args[1] and args[2] should correspond to the following:
 		 *
 		 * -length => "128" or "256"
-		 * -mode => "ecb" or "cbc"
-		 * neither -length nor -mode: args[1] should be the keyFile, and args[2] should be the inputFile
+		 * not -length: args[1] should be the keyFile, and args[2] should be the inputFile
 		 *
 		 * args[3] and args[4] should exist only if -length was specified:
 		 */
 		try 
 		{
-			int keysizecheck = 128; //User's intended key size.
-			if (!args[1].equals("-length")) //No optional length argument given.
-			{
-				if(!args[1].equals("-mode")) //No optional mode given either;
-				{
-					//Defaults to 128-bit key size and ECB.
-				}
-				else //Mode option was given;
-				{
-					mode = args[2].equals("ecb") ? Mode.ECB : Mode.CBC;
-					keyFileIndex += 2;
-				}
-			} 
-			else //-length was explicitly given.
+			int keysizecheck = 128;
+			ftw = "";
+			if (args[1].equals("-length")) //-length was explicitly given.
 			{
 				keyFileIndex+=2;
 				keysizecheck = Integer.parseInt(args[keyFileIndex-1]);
-				if(args[3].equals("-mode")) //Both -length and -mode options were given
-				{
-					mode = args[4].equals("ecb") ? Mode.ECB : Mode.CBC;
-					keyFileIndex+=2;
-				}
-
 			}
 			keyreader = new BufferedReader(new FileReader(args[keyFileIndex]));
-			key = keyreader.readLine();
+			key = keyreader.readLine(); // read the key from the txt file 
 			if(key.length() *4 != keysizecheck) //Check to see if user's intended key size matches the size of key in file.
 			{
 				throw new Exception("Error: Attemping to use a " + key.length() * 4 + "-bit key with AES-"+keysizecheck);
 			}           
 			input = new BufferedReader(new FileReader(args[keyFileIndex+1])); 
-			if(mode == Mode.CBC)
-			{
-				iv = keyreader.readLine();
-				if(iv == null)
-				{
-					throw new Exception("Error: Initialization Vector required for CBC Mode.");
-				}
-				else if(iv.length() != 32)
-				{
-					throw new Exception("Error: Size of Initialization Vector must be 32 bytes.");
-				}
-			}
 			ftw += args[keyFileIndex+1];
 		}
 		catch (Exception e) 
@@ -161,54 +132,39 @@ public class AESModel {
 		}
 
 		AESModel aes = new AESModel();
-		if (args[0].equalsIgnoreCase("e")) 
+		if (args[0].equalsIgnoreCase("e")) // encryption mode
 		{
-			out = new FileWriter(ftw + ".enc");
+			out = new FileWriter(ftw + ".enc.txt");
 			int numRounds = 10 + (((key.length() * 4 - 128) / 32));
-			String line = input.readLine();
-			int[][] state, initvector = new int[4][4];
+			String lineInput = input.readLine(); 
+			String line = String.format("%040x", new BigInteger(1, lineInput.getBytes(Charset.forName("UTF-8"))));
+			int[][] state = new int[4][4];
 			int[][] keymatrix = aes.keyExpansion(key);
-			if(mode == Mode.CBC)
-			{
-				for (int i = 0; i < 4; i++)
-				{
-					for (int j = 0; j < 4; j++) {
-						initvector[j][i] = Integer.parseInt(iv.substring((8 * i) + (2 * j), (8 * i) + (2 * j + 2)), 16);
-					}
-				}
-			}
 			while (line != null) {
-				if (line.matches("[0-9A-F]+")) //If line is valid (i.e. contains valid hex characters, encrpyt. Otherwise, skip line. 
+				if (line.matches("[0-9a-f]+")) 
 				{
 					if (line.length() < 32) {
 						line = String.format("%032x",Integer.parseInt(line, 16));
 					}
 					state = new int[4][4];
-					for (int i = 0; i < 4; i++) //Parses line into a matrix
+					for (int i = 0; i < 4; i++) 
 					{
 						for (int j = 0; j < 4; j++) {
 							state[j][i] = Integer.parseInt(line.substring((8 * i) + (2 * j), (8 * i) + (2 * j + 2)), 16);
 						}
 					}
-					if(mode == Mode.CBC)
-					{
-						aes.addRoundKey(state, initvector);   
-					}
-					aes.addRoundKey(state, aes.subKey(keymatrix, 0)); //Starts the addRoundKey with the first part of Key Expansion
+					aes.addRoundKey(state, aes.subKey(keymatrix, 0));
 					for (int i = 1; i < numRounds; i++) {
-						aes.subBytes(state); //implements the Sub-Bytes subroutine.
-						aes.shiftRows(state); //implements Shift-Rows subroutine.
+						aes.subBytes(state); 
+						aes.shiftRows(state); 
 						aes.mixColumns(state);
 						aes.addRoundKey(state, aes.subKey(keymatrix, i));
 					}
-					aes.subBytes(state); //implements the Sub-Bytes subroutine.
-					aes.shiftRows(state); //implements Shift-Rows subroutine.
+					aes.subBytes(state); 
+					aes.shiftRows(state); 
 					aes.addRoundKey(state, aes.subKey(keymatrix, numRounds));
-					if(mode == Mode.CBC)
-					{
-						initvector = state;
-					}
-					out.write(MatrixToString(state) + newline); //If all systems could just use the same newline, I'd be set.
+					System.out.println("AES encrypt :" + MatrixToString(state));
+					out.write(MatrixToString(state) + newline); 
 					line = input.readLine();
 				} 
 				else 
@@ -224,19 +180,9 @@ public class AESModel {
 			out = new FileWriter(ftw + ".dec");
 			int numRounds = 10 + (((key.length() * 4 - 128) / 32));
 			String line = input.readLine();
+//			String line = String.format("%040x", new BigInteger(1, lineInput.getBytes(Charset.forName("UTF-8"))));
 			int[][] state = new int[4][4];
-			int[][] initvector = new int[4][4];
-			int[][] nextvector = new int[4][4];
 			int[][] keymatrix = aes.keyExpansion(key);
-			if(mode == Mode.CBC) //Parse Initialization Vector
-			{
-				for (int i = 0; i < 4; i++)
-				{
-					for (int j = 0; j < 4; j++) {
-						initvector[j][i] = Integer.parseInt(iv.substring((8 * i) + (2 * j), (8 * i) + (2 * j + 2)), 16);
-					}
-				}                
-			}
 			while (line != null) {
 				state = new int[4][4];
 				for (int i = 0; i < state.length; i++) //Parses line into a matrix
@@ -244,10 +190,6 @@ public class AESModel {
 					for (int j = 0; j < state[0].length; j++) {
 						state[j][i] = Integer.parseInt(line.substring((8 * i) + (2 * j), (8 * i) + (2 * j + 2)), 16);
 					}
-				}
-				if(mode == Mode.CBC)
-				{
-					aes.copy2DArray(nextvector,state);
 				}
 				aes.addRoundKey(state, aes.subKey(keymatrix, numRounds));
 				for (int i = numRounds - 1; i > 0; i--) {
@@ -259,21 +201,16 @@ public class AESModel {
 				aes.invShiftRows(state);
 				aes.invSubBytes(state); 
 				aes.addRoundKey(state, aes.subKey(keymatrix, 0));
-				if(mode == Mode.CBC)
-				{
-					aes.addRoundKey(state, initvector);
-					aes.copy2DArray(initvector,nextvector);
-				}
-				out.write(MatrixToString(state) + newline);
+				String stateString = new String(HexBin.decode(MatrixToString(state)));
+				System.out.println("AES decrypt :"+ stateString);
+				out.write(stateString + newline);
+				//out.write(MatrixToString(state) + newline);
+				//String lineString = new String(HexBin.decode(line));
+				//lineString = input.readLine();
 				line = input.readLine();
 			}
 			input.close();
 			out.close();
-		} 
-		else 
-		{
-			System.err.println("Usage for Encryption: java AES e keyFile inputFile");
-			System.err.println("Usage for Decryption: java AES d keyFile encryptedinputFile");
 		} 
 	}
 	
@@ -282,20 +219,6 @@ public class AESModel {
 	 */
 	public AESModel() {
 		//Nothing to initialize here.
-	}
-
-	/**
-	 * Copy a 2D array 
-	 * @param destination
-	 * @param source
-	 */
-	private void copy2DArray(int[][] destination, int[][] source)
-	{
-		assert destination.length == source.length && destination[0].length == source[0].length;
-		for(int i = 0; i < destination.length;i++)
-		{
-			System.arraycopy(source[i], 0, destination[i], 0, destination[0].length);
-		}
 	}
 
 	/**

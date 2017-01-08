@@ -55,15 +55,15 @@ public class Main {
 				try {
 					String[] aesEncrypt = new String[3];
 					aesEncrypt[0] = "e";
-					aesEncrypt[1] = "input.txt";
-					aesEncrypt[2] = "inputFile.txt";
+					aesEncrypt[1] = "input.txt"; // key 128 bits 
+					aesEncrypt[2] = "DESplainmessage.txt";//"inputFile.txt";
 					AESModel aesE = new AESModel(aesEncrypt);
 					
 					String[] aesDecrypt = new String[3];
 					aesDecrypt[0] = "d";
-					aesDecrypt[1] = "input.txt";
-					aesDecrypt[2] = "inputFile.txt.enc";
-					AESModel aesD = new AESModel(aesDecrypt);							
+					aesDecrypt[1] = "input.txt"; // key 128 bits
+					aesDecrypt[2] = "DESplainmessage.txt.enc.txt";//"inputFile.txt.enc.txt";
+					AESModel aesD = new AESModel(aesDecrypt);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

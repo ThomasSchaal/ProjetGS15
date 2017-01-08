@@ -383,6 +383,7 @@ public class DESModel {
 		
 		//String encryptedString = new String(tmp);
 		String b64 = Base64.encode(tmp);
+		System.out.println("DES encrypt :"+b64);
 		try {
 			Files.write(Paths.get("DEScyphermessage.enc.txt"), Arrays.asList(b64), Charset.forName("UTF-8"));
 		} catch (IOException e) {}
@@ -395,7 +396,7 @@ public class DESModel {
 		//fetch the message from a specified file
 		String message = "";
 		try {
-			message = Files.readAllLines(Paths.get(path), Charset.forName("UTF-8")).get(0); 
+			message = Files.readAllLines(Paths.get(path), Charset.forName("UTF-8")).get(0);
 		} catch (IOException e) {}
 
 		byte[] data = Base64.decode(message);
@@ -421,7 +422,7 @@ public class DESModel {
 		tmp = deletePadding(tmp);
 		
 		String dec = new String(tmp);
-		
+		System.out.println("DES decrypt :" +dec);
 		try {
 			Files.write(Paths.get("DESdecryptedmessage.dec.txt"), Arrays.asList(dec), Charset.forName("UTF-8"));
 		} catch (IOException e) {}
