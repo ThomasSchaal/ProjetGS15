@@ -245,6 +245,33 @@ public class DESModel {
 		
 		return tmp;
 	}
+	
+	
+	private static byte[] encrypt64Bloc1Feistel(byte[] bloc, byte[][] subkeys, boolean isDecrypt, int i) {
+		byte[] tmp = new byte[bloc.length];
+		R = new byte[bloc.length / 2];
+		L = new byte[bloc.length / 2];
+		int IPlength = IP.length;
+		int IPlengthDiv2 = IPlength / 2;
+		// Initial permutation
+		tmp = permutFunc(bloc, IP);
+
+		// Extract the bits so we can have our two blocks
+		L = extractBits(tmp, 0, IPlengthDiv2);
+		R = extractBits(tmp, IPlengthDiv2, IPlengthDiv2);
+
+		//1 Feistel round
+		feistel(R, L, subkeys, isDecrypt, i);										
+		
+		
+		//Festel rounds are done, we can put back the two blocks together
+		tmp = concatBits(R, IPlengthDiv2, L, IPlengthDiv2);
+
+		//Finaaaaaal Permutation
+		//tmp = permutFunc(tmp, FP);
+		
+		return tmp;
+	}
 
 	private static byte[] function_which_is_called_F(byte[] R, byte[] K) {
 		byte[] tmp;
