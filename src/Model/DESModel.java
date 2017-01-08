@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.event.ListSelectionEvent;
 
@@ -368,10 +369,20 @@ public class DESModel {
 	
 	public static void encrypt(String path, byte[] key) {
 		//fetch the message from a specified file
+//		String message = "";
+//		try {
+//			message = Files.readAllLines(Paths.get(path), Charset.forName("UTF-8")).get(0); 
+//		} catch (IOException e) {}
+		
 		String message = "";
+		List<String> liste = null;
 		try {
-			message = Files.readAllLines(Paths.get(path), Charset.forName("UTF-8")).get(0); 
+			liste = Files.readAllLines(Paths.get(path), Charset.forName("UTF-8")); 
 		} catch (IOException e) {}
+		
+		for (String string : liste) {
+			message += string;
+		}
 		
 		byte[] data = message.getBytes();
 		
@@ -430,11 +441,22 @@ public class DESModel {
 
 	public static void decrypt(String path, byte[] key) {
 		//fetch the message from a specified file
+
 		String message = "";
 		try {
 			message = Files.readAllLines(Paths.get(path), Charset.forName("UTF-8")).get(0);
 		} catch (IOException e) {}
 
+//		String message = "";
+//		List<String> liste = null;
+//		try {
+//			liste = Files.readAllLines(Paths.get(path), Charset.forName("UTF-8")); 
+//		} catch (IOException e) {}
+//		
+//		for (String string : liste) {
+//			message += string;
+//		}
+		
 		byte[] data = Base64.decode(message);
 
 		int i;

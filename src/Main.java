@@ -21,8 +21,6 @@ public class Main {
 		System.out.println("->1<- Chiffrement symétrique VCES");
 		System.out.println("->2<- Chiffrement RSA avec module multiple");
 		System.out.println("->3<- Signature RSA avec module multiple");
-		System.out.println("->4<- Déchiffrement RSA");
-		System.out.println("->5<- Vérifier une signature RSA");
 		
 		//Input de l'user
 		int choice = 0;
@@ -39,37 +37,38 @@ public class Main {
 			//Renvoie vers le choix
 			switch (choice){
 			case 1:
-				// Chiffrement symétrique VCES
 				
-				//Test DES
 				String cle = "1234567890123456789012345678901834567890123456789012345678901234";
 				byte[] key = cle.getBytes();
 				String pathPlainmessageDES = "DESplainmessage.txt";
-				String pathCiphermessageDES = "DEScyphermessage.enc.txt";
-				DESModel.encrypt(pathPlainmessageDES, key); //encrypted message will be store in a file
-				DESModel.decrypt(pathCiphermessageDES, key); //uncrypted message will be store in a file
-				//Fin test DES
+				DESModel.encrypt(pathPlainmessageDES, key); 
 				
-				
-				//Test AES
-				try {
+				try{
 					String[] aesEncrypt = new String[3];
 					aesEncrypt[0] = "e";
 					aesEncrypt[1] = "input.txt"; // key 128 bits 
-					aesEncrypt[2] = "DESplainmessage.txt";//"inputFile.txt";
+					aesEncrypt[2] = "DEScyphermessage.enc.txt";
 					AESModel aesE = new AESModel(aesEncrypt);
-					
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				
+				try {
 					String[] aesDecrypt = new String[3];
 					aesDecrypt[0] = "d";
 					aesDecrypt[1] = "input.txt"; // key 128 bits
-					aesDecrypt[2] = "DESplainmessage.txt.enc.txt";//"inputFile.txt.enc.txt";
+					aesDecrypt[2] = "DEScyphermessage.enc.txt.enc.txt";
 					AESModel aesD = new AESModel(aesDecrypt);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				//Fin test AES
 				
+				String pathCiphermessageDES = "DEScyphermessage.enc.txt.enc.txt.dec";
+				DESModel.decrypt(pathCiphermessageDES, key); //encrypted message will be store in a file
+				
+
 				break;
 			case 2:
 				// Chiffrement RSA avec module multiple				
@@ -111,17 +110,11 @@ public class Main {
 					e.printStackTrace();
 				}				
 				break;
-			case 4:
-				// Déchiffrement RSA
-				break;
-			case 5:
-				// Vérifier une signature RSA
-				break;
 			default:
 				System.out.println("Mauvais choix");
 				break;					
 			}
-		} while (choice < 1 || choice > 5);
+		} while (choice < 1 || choice > 3);
 		
 	}
 	

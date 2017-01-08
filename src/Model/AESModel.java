@@ -3,6 +3,8 @@ package Model;
 import java.io.*;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin; 
 
@@ -136,7 +138,7 @@ public class AESModel {
 		{
 			out = new FileWriter(ftw + ".enc.txt");
 			int numRounds = 10 + (((key.length() * 4 - 128) / 32));
-			String lineInput = input.readLine(); 
+			String lineInput = Files.readAllLines(Paths.get(args[keyFileIndex+1]),Charset.forName("UTF-8")).get(0); 
 			String line = String.format("%040x", new BigInteger(1, lineInput.getBytes(Charset.forName("UTF-8"))));
 			int[][] state = new int[4][4];
 			int[][] keymatrix = aes.keyExpansion(key);
@@ -180,7 +182,6 @@ public class AESModel {
 			out = new FileWriter(ftw + ".dec");
 			int numRounds = 10 + (((key.length() * 4 - 128) / 32));
 			String line = input.readLine();
-//			String line = String.format("%040x", new BigInteger(1, lineInput.getBytes(Charset.forName("UTF-8"))));
 			int[][] state = new int[4][4];
 			int[][] keymatrix = aes.keyExpansion(key);
 			while (line != null) {
@@ -204,9 +205,6 @@ public class AESModel {
 				String stateString = new String(HexBin.decode(MatrixToString(state)));
 				System.out.println("AES decrypt :"+ stateString);
 				out.write(stateString + newline);
-				//out.write(MatrixToString(state) + newline);
-				//String lineString = new String(HexBin.decode(line));
-				//lineString = input.readLine();
 				line = input.readLine();
 			}
 			input.close();
