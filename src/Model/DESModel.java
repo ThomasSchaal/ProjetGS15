@@ -137,6 +137,7 @@ public class DESModel {
 
 	// subkey
 	private static byte[][] K;
+	private static byte[] R, L, tmpR;
 
 
 
@@ -203,11 +204,25 @@ public class DESModel {
 		return out;
 
 	}
+	
+	private static void feistel(byte[] R, byte[] L, byte[][] subkeys, boolean isDecrypt, int i){
+		tmpR = R;
+		if(isDecrypt) // In that case we're using the subkeys in the other order
+			R = function_which_is_called_F(R, subkeys[15-i]);
+		else
+			R = function_which_is_called_F(R,subkeys[i]);
+		
+		
+		R = xor_func(L, R);	// R = L XOR R									
+		L = tmpR; // L = R	
+	}
+	
+	
 
 	private static byte[] encrypt64Bloc(byte[] bloc, byte[][] subkeys, boolean isDecrypt) {
 		byte[] tmp = new byte[bloc.length];
-		byte[] R = new byte[bloc.length / 2];
-		byte[] L = new byte[bloc.length / 2];
+		R = new byte[bloc.length / 2];
+		L = new byte[bloc.length / 2];
 		int IPlength = IP.length;
 		int IPlengthDiv2 = IPlength / 2;
 		// Initial permutation
@@ -219,13 +234,7 @@ public class DESModel {
 
 		//16 Feistel rounds
 		for (int i = 0; i < 16; i++) {
-			byte[] tmpR = R;
-			if(isDecrypt) // In that case we're using the subkeys in the other order
-				R = function_which_is_called_F(R, subkeys[15-i]);
-			else
-				R = function_which_is_called_F(R,subkeys[i]);
-			R = xor_func(L, R);	// R = L XOR R									
-			L = tmpR; // L = R												
+			feistel(R, L, subkeys, isDecrypt, i);										
 		}
 		
 		//Festel rounds are done, we can put back the two blocks together
